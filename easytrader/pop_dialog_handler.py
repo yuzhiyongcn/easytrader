@@ -21,7 +21,9 @@ class PopDialogHandler:
 
     @perf_clock
     def handle(self, title):
-        if any(s in title for s in {"提示信息", "委托确认", "网上交易用户协议", "撤单确认"}):
+        if any(
+            s in title for s in {"提示信息", "委托确认", "网上交易用户协议", "撤单确认"}
+        ):
             self._submit_by_shortcut()
             return None
 
@@ -92,7 +94,7 @@ class TradePopDialogHandler(PopDialogHandler):
                 return {"entrust_no": entrust_no}
 
             self._submit_by_click()
-            time.sleep(0.05)
+            time.sleep(0.5)
             raise exceptions.TradeError(content)
         self._close()
         return None

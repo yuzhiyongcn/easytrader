@@ -44,7 +44,7 @@ class GJClientTrader(clienttrader.BaseLoginClientTrader):
 
             self._app.top_window().Edit1.type_keys(user)
             self._app.top_window().Edit2.type_keys(password)
-            edit3 = self._app.top_window().window(control_id=0x3eb)
+            edit3 = self._app.top_window().window(control_id=0x3EB)
             while True:
                 try:
                     code = self._handle_verify_code()
@@ -70,11 +70,11 @@ class GJClientTrader(clienttrader.BaseLoginClientTrader):
         self._main = self._app.window(title="网上股票交易系统5.0")
 
     def _handle_verify_code(self):
-        control = self._app.top_window().window(control_id=0x5db)
+        control = self._app.top_window().window(control_id=0x5DB)
         control.click()
-        time.sleep(0.2)
+        time.sleep(1)
         file_path = tempfile.mktemp() + ".jpg"
         control.capture_as_image().save(file_path)
-        time.sleep(0.2)
+        time.sleep(1)
         vcode = recognize_verify_code(file_path, "gj_client")
         return "".join(re.findall("[a-zA-Z0-9]+", vcode))

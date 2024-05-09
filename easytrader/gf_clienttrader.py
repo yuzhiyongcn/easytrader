@@ -45,7 +45,7 @@ class GFClientTrader(clienttrader.BaseLoginClientTrader):
 
             self.type_edit_control_keys(self._app.top_window().Edit1, user)
             self.type_edit_control_keys(self._app.top_window().Edit2, password)
-            edit3 = self._app.top_window().window(control_id=0x3eb)
+            edit3 = self._app.top_window().window(control_id=0x3EB)
             while True:
                 try:
                     code = self._handle_verify_code()
@@ -68,16 +68,18 @@ class GFClientTrader(clienttrader.BaseLoginClientTrader):
             self._app = pywinauto.Application().connect(
                 path=self._run_exe_path(exe_path), timeout=10
             )
-        self._main = self._app.window(title_re="""{title}.*""".format(title=self._config.TITLE))
+        self._main = self._app.window(
+            title_re="""{title}.*""".format(title=self._config.TITLE)
+        )
         self.close_pop_dialog()
 
     def _handle_verify_code(self):
-        control = self._app.top_window().window(control_id=0x5db)
+        control = self._app.top_window().window(control_id=0x5DB)
         control.click()
-        time.sleep(0.2)
+        time.sleep(1)
         file_path = tempfile.mktemp() + ".jpg"
         control.capture_as_image().save(file_path)
-        time.sleep(0.2)
+        time.sleep(1)
         vcode = recognize_verify_code(file_path, "gf_client")
         if os.path.exists(file_path):
             os.remove(file_path)

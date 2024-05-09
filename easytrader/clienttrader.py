@@ -25,6 +25,7 @@ if not sys.platform.startswith("darwin"):
     import pywinauto
     import pywinauto.clipboard
 
+
 class IClientTrader(abc.ABC):
     @property
     @abc.abstractmethod
@@ -181,7 +182,9 @@ class ClientTrader(IClientTrader):
 
         # 点击全部撤销控件
         self._app.top_window().child_window(
-            control_id=self._config.TRADE_CANCEL_ALL_ENTRUST_CONTROL_ID, class_name="Button", title_re="""全撤.*"""
+            control_id=self._config.TRADE_CANCEL_ALL_ENTRUST_CONTROL_ID,
+            class_name="Button",
+            title_re="""全撤.*""",
         ).click()
         self.wait(0.2)
 
@@ -305,7 +308,8 @@ class ClientTrader(IClientTrader):
     def _set_stock_exchange_type(self, ttype):
         """根据选择的市价交易类型选择对应的下拉选项"""
         selects = self._main.child_window(
-            control_id=self._config.TRADE_STOCK_EXCHANGE_CONTROL_ID, class_name="ComboBox"
+            control_id=self._config.TRADE_STOCK_EXCHANGE_CONTROL_ID,
+            class_name="ComboBox",
         )
 
         for i, text in enumerate(selects.texts()):
@@ -381,9 +385,9 @@ class ClientTrader(IClientTrader):
                     w.close()
                     self.wait(0.2)
         except (
-                findwindows.ElementNotFoundError,
-                timings.TimeoutError,
-                RuntimeError,
+            findwindows.ElementNotFoundError,
+            timings.TimeoutError,
+            RuntimeError,
         ) as ex:
             pass
 
@@ -427,10 +431,13 @@ class ClientTrader(IClientTrader):
 
     @perf_clock
     def _submit_trade(self):
-        time.sleep(0.2)
-        self._main.child_window(
+        time.sleep(1)
+        submit_btn = self._main.child_window(
             control_id=self._config.TRADE_SUBMIT_CONTROL_ID, class_name="Button"
-        ).click()
+        )
+        submit_btn.click_input()
+        time.sleep(1)
+        print("买入按钮已经点击")
 
     @perf_clock
     def __get_top_window_pop_dialog(self):
@@ -520,7 +527,7 @@ class ClientTrader(IClientTrader):
     def _switch_left_menus(self, path, sleep=0.2):
         self.close_pop_dialog()
         self._get_left_menus_handle().get_item(path).select()
-        self._app.top_window().type_keys('{F5}')
+        self._app.top_window().type_keys("{F5}")
         self.wait(sleep)
 
     def _switch_left_menus_by_shortcut(self, shortcut, sleep=0.5):
