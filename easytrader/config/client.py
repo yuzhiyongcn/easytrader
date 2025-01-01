@@ -16,6 +16,9 @@ def create(broker):
         return HTZQ
     if broker == "universal":
         return UNIVERSAL
+    if broker == "ths5.19":
+        return THS519
+
     raise NotImplementedError
 
 
@@ -30,19 +33,22 @@ class CommonConfig:
     TRADE_CANCEL_ALL_ENTRUST_CONTROL_ID = 30001
 
     TRADE_SECURITY_CONTROL_ID = 1032
-    TRADE_PRICE_CONTROL_ID = 1033
+    TRADE_PRICE_CONTROL_ID = 1033 # 0x409,'买入价格' Edit
     TRADE_AMOUNT_CONTROL_ID = 1034
 
-    TRADE_SUBMIT_CONTROL_ID = 1006
+    TRADE_SUBMIT_CONTROL_ID = 1006 # 0x3EE,'买入'按钮
 
     TRADE_MARKET_TYPE_CONTROL_ID = 1541
 
-    COMMON_GRID_CONTROL_ID = 1047
+    COMMON_GRID_CONTROL_ID = 1047 #0x417 ，grid控件
+
+    COMMON_GRID_CONTROL_ID_NEW = 1308 # 另外一种grid控件，显示了资金总体情况，这个是使用spy++捕获出来的
 
     COMMON_GRID_LEFT_MARGIN = 10
     COMMON_GRID_FIRST_ROW_HEIGHT = 30
     COMMON_GRID_ROW_HEIGHT = 16
 
+    BALANCE_MENU_PATH_NEW = ["查询[F4]", "资金股份"]
     BALANCE_MENU_PATH = ["查询[F4]", "资金股票"]
     POSITION_MENU_PATH = ["查询[F4]", "资金股票"]
     TODAY_ENTRUSTS_MENU_PATH = ["查询[F4]", "当日委托"]
@@ -51,12 +57,14 @@ class CommonConfig:
     BALANCE_CONTROL_ID_GROUP = {
         "资金余额": 1012,
         "可用金额": 1016,
-        "可取金额": 1017,
+        # "可取金额": 1017,
+        # "冻结金额": 0x3F5,
         "股票市值": 1014,
         "总资产": 1015,
+        "持仓盈亏": 0x403,
     }
 
-    POP_DIALOD_TITLE_CONTROL_ID = 1365
+    POP_DIALOD_TITLE_CONTROL_ID = 1365 # 0x555
 
     GRID_DTYPE = {
         "操作日期": str,
@@ -181,13 +189,20 @@ class HTZQ(CommonConfig):
 
 
 class UNIVERSAL(CommonConfig):
-    DEFAULT_EXE_PATH = r"c:\\ths\\xiadan.exe"
+    DEFAULT_EXE_PATH = r"c:\\software\\ths\\xiadan.exe"
 
     BALANCE_CONTROL_ID_GROUP = {
         "资金余额": 1012,
         "可用金额": 1016,
-        "可取金额": 1017,
+        # "可取金额": 1017,
+        # "冻结金额": 0x3F5,
+        "股票市值": 1014,
         "总资产": 1015,
+        "持仓盈亏": 0x403,
     }
 
     AUTO_IPO_NUMBER = '可申购数量'
+
+
+class THS519(CommonConfig):
+    DEFAULT_EXE_PATH = r"c:\\software\\ths\\xiadan.exe"

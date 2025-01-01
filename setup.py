@@ -1,6 +1,18 @@
 # coding:utf8
-from setuptools import setup
+from setuptools import setup,Command,find_packages
+import os
+class CleanCommand(Command):
+    """Custom clean command to tidy up the project root."""
+    user_options = []
 
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info')
 long_desc = """
 easytrader
 ===============
@@ -77,14 +89,17 @@ return::
 
 setup(
     name="easytrader",
-    version="0.23.0",
+    version="1.0.0",
     description="A utility for China Stock Trade",
     long_description=long_desc,
-    author="shidenggui",
-    author_email="longlyshidenggui@gmail.com",
+    author="piginzoo",
+    author_email="piginzoo@gmail.com",
     license="BSD",
-    url="https://github.com/shidenggui/easytrader",
+    url="https://github.com/piginzoo/easytrader",
     keywords="China stock trade",
+    cmdclass={
+        'clean': CleanCommand,
+    },
     install_requires=[
         "requests",
         "six",
@@ -104,7 +119,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "License :: OSI Approved :: BSD License",
     ],
-    packages=["easytrader", "easytrader.config", "easytrader.utils"],
+    packages=find_packages(where=".", include=('easytrader.*'),exclude=('tests', 'tests.*')),
     package_data={
         "": ["*.jar", "*.json"],
         "config": ["config/*.json"],

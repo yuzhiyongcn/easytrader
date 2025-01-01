@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import abc
 import io
+import os
 import tempfile
 from io import StringIO
 from typing import TYPE_CHECKING, Dict, List, Optional
@@ -78,7 +79,10 @@ class Copy(BaseStrategy):
     def get(self, control_id: int) -> List[Dict]:
         grid = self._get_grid(control_id)
         self._set_foreground(grid)
+        # Clt-A + Clt-C
         grid.type_keys("^A^C", set_foreground=False)
+
+        # 从剪贴板获得相应信息
         content = self._get_clipboard_data()
         return self._format_grid_data(content)
 
@@ -99,7 +103,10 @@ class Copy(BaseStrategy):
             if (
                     self._trader.app.top_window().window(class_name="Static", title_re="验证码").exists(timeout=1)
             ):
-                file_path = "tmp.png"
+                # logger.debug("验证码对话框弹出，需要OCR识别")
+
+                file_path = tempfile.mktemp()+".png"
+
                 count = 5
                 found = False
                 while count > 0:
@@ -111,25 +118,31 @@ class Copy(BaseStrategy):
 
                     captcha_num = captcha_recognize(file_path).strip()  # 识别验证码
                     captcha_num = "".join(captcha_num.split())
-                    logger.info("captcha result-->" + captcha_num)
+                    # logger.info("验证码识别结果：%s" , captcha_num)
                     if len(captcha_num) == 4:
-                        self._trader.app.top_window().window(
-                            control_id=0x964, class_name="Edit"
-                        ).set_text(
-                            captcha_num
-                        )  # 模拟输入验证码
+                        # self._trader.app.top_window().window(
+                        #     control_id=0x964, class_name="Edit"
+                        # ).set_text(
+                        #     captcha_num
+                        # )  # 模拟输入验证码
+                        # https://github.com/shidenggui/easytrader/issues/452
 
+                        editor = self._trader.app.top_window().child_window(control_id=0x964,class_name="Edit")# 0x964是验证码输入框
+                        editor.select()
+                        editor.type_keys(captcha_num)
                         self._trader.app.top_window().set_focus()
                         pywinauto.keyboard.SendKeys("{ENTER}")  # 模拟发送enter，点击确定
                         try:
+                            self._trader.wait(0.5)
+                            # 下面的"验证码错误！"label，如果不存在（会触发异常），说明识别通过了
                             logger.info(
                                 self._trader.app.top_window()
                                     .window(control_id=0x966, class_name="Static")
                                     .window_text()
                             )
                         except Exception as ex:  # 窗体消失
-                            logger.exception(ex)
                             found = True
+                            # logger.info("识别完成")
                             break
                     count -= 1
                     self._trader.wait(0.1)
@@ -138,8 +151,6 @@ class Copy(BaseStrategy):
                     ).click()
                 if not found:
                     self._trader.app.top_window().Button2.click()  # 点击取消
-            else:
-                Copy._need_captcha_reg = False
         count = 5
         while count > 0:
             try:
