@@ -1,4 +1,6 @@
 # 魔改版
+python 版本： 3.6.8-win32
+
 
 ```
 IClientTrader
