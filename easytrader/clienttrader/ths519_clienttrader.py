@@ -110,12 +110,22 @@ class THS519ClientTrader(clienttrader.BaseLoginClientTrader):
                 2: 验证码输入多次失败
         """
         try:
-            # 获取所有Edit控件
-            edit_ctrls = login_window.children(control_type="Edit")
+            # 获取所有控件的详细信息
+            win_children = login_window.children()
+            # 过滤出Edit控件
+            edit_ctrls = [child for child in win_children if child.class_name() == 'Edit' and child.is_visible() and child.is_enabled()]
+            
+            logger.debug(f"找到的Edit控件数量: {len(edit_ctrls)}")
+
+            if (len(edit_ctrls) == 2):
+                logger.info("没有找到验证码控件，跳过验证码输入")
+                return 1  # 没有验证码控件
+            
             # 找到用户名和密码之外的Edit控件
             verify_ctrl = None
             for ctrl in edit_ctrls:
                 if ctrl.control_id() not in [login_window.Edit1.control_id(), login_window.Edit2.control_id()]:
+                    logger.debug("控件ID:%s", ctrl.control_id())
                     verify_ctrl = ctrl
                     break
             
@@ -133,12 +143,12 @@ class THS519ClientTrader(clienttrader.BaseLoginClientTrader):
                     time.sleep(1)
                     code = self._handle_verify_code(handle=login_window_handle)
                     verify_ctrl.type_keys(code)
-                    logger.info("解析验证码解析成功，并输入到Edit框%%*/s", code)
+                    logger.info("解析验证码解析成功，并输入到Edit框：%s", code)
                     time.sleep(1)
                     # 点击右侧的确定按钮来登录
                     self._app.window(handle=login_window_handle)["登录"].click()
                     # 等待登录窗口消失
-                    self._app.window(handle=login_window_handle).wait_not("exists", 5)
+                    self._app.window(handle=login_window_handle).wait_not("exists", 30)
                     return 0  # 成功
                 except Exception:
                     time.sleep(1)

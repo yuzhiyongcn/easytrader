@@ -118,7 +118,7 @@ class Copy(BaseStrategy):
 
                     captcha_num = captcha_recognize(file_path).strip()  # 识别验证码
                     captcha_num = "".join(captcha_num.split())
-                    # logger.info("验证码识别结果：%s" , captcha_num)
+                    logger.info("验证码识别结果：%s" , captcha_num)
                     if len(captcha_num) == 4:
                         # self._trader.app.top_window().window(
                         #     control_id=0x964, class_name="Edit"
@@ -131,7 +131,7 @@ class Copy(BaseStrategy):
                         editor.select()
                         editor.type_keys(captcha_num)
                         self._trader.app.top_window().set_focus()
-                        pywinauto.keyboard.SendKeys("{ENTER}")  # 模拟发送enter，点击确定
+                        pywinauto.keyboard.send_keys("{ENTER}")  # 模拟发送enter，点击确定
                         try:
                             self._trader.wait(0.5)
                             # 下面的"验证码错误！"label，如果不存在（会触发异常），说明识别通过了
